@@ -51,11 +51,12 @@
 body { margin: 0; padding: 0; }
 
 #marker {
-  background-image: url('https://docs.mapbox.com/mapbox-gl-js/assets/washington-monument.jpg');
+  background-image: url('./images/img_3.jpg');
   background-size: cover;
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
+  border: 2px solid;
   cursor: pointer;
 }
 
@@ -64,20 +65,7 @@ body { margin: 0; padding: 0; }
     max-height: 300px;
 }
 
-#fly {
-display: block;
-position: relative;
-margin: 0px auto;
-width: 50%;
-height: 40px;
-padding: 10px;
-border: none;
-border-radius: 3px;
-font-size: 12px;
-text-align: center;
-color: #fff;
-background: #ee8a65;
-}
+
 #map {
   height: 450px;
   /* background-color:blue; */
@@ -251,11 +239,6 @@ background: #ee8a65;
     </div>
     
   </div>
-  <div class="container" id="info">
-    <morty class="row" id="iframe"> 
-
-    </morty>
-</div>
   
 <!-- <div id="map"></div> -->
 <br>
@@ -332,21 +315,22 @@ background: #ee8a65;
     JSON.stringify(e.lngLat.wrap());
     });
 
-    //console.log($("#valuation_type option:selected").text())
-    //console.log($("#mile").val())
+
   document.getElementById('map1').addEventListener('click', () => {
   // Fly to a random location by offsetting the point -74.50, 40
   // by up to 5 degrees.
-   /* map.flyTo({
+    map.flyTo({
       center: [-2.114864, 57.144156], 
-      zoom:10,
+      zoom:12,
       pitch: 60, // pitch in degrees
       bearing: -60, // bearing in degrees
       essential: true 
-    });*/
+    });
     
     var mile = $("#mile").val()
     var valu_type = $("#valuation_type option:selected").text()
+    var budget_type = $("#budget_label span b").text()
+    
     var postcode = 'AB10+1XG'
     if(valu_type== 'Rent'){
       var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=high-rental-demand&postcode='+postcode+'&radius='+mile+'&results=60'
@@ -370,23 +354,52 @@ background: #ee8a65;
         else{
           var j=0;
           for(i=0; i<house.properties.length; i++){
-            console.log([house.properties[i]['lng'], house.properties[i]['lat']])
-         
-          console.log('<p></p>'+house.properties[i]['address']+'</p><p>'+house.properties[i]['bedrooms']+'</p><p>'+house.properties[i]['type']+'</p><p>'+house.properties[i]['postcode']+'</p><p><strong>'+house.properties[i]['price']+'</strong></p><p> Check out the house <a href="'+house.properties[i]['url']+'"></a></p>');
-
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-            '<h6>Price: '+house.properties[i]['price']+'</h6><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Check out the house <a href="'+house.properties[i]['url']+'"></a></p>'
+            if(house.properties[i]['price'] <= budget_type)
+            {
+              continue;
+            }
+            console.log(budget_type)
+            if(valu_type== 'Sale')
+          {
+            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+            '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
           ).setMaxWidth("500px");
 
           // create DOM element for the marker
-            const el = document.createElement('div');
-            el.id = 'marker';
-            
-            // create the marker
-            new mapboxgl.Marker(el)
+          const el = document.createElement('div');
+          el.id = 'marker';
+
+          // create the marker
+          new mapboxgl.Marker(el)
             .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
             .setPopup(popup) // sets a popup on this marker
             .addTo(map);
+          }
+
+          if(valu_type== 'Rent')
+          {
+            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+            '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+          ).setMaxWidth("500px");
+            // create the marker
+            new mapboxgl.Marker()
+            .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+            .setPopup(popup) // sets a popup on this marker
+            .addTo(map);
+            
+          }
+          if(valu_type== 'Shortlet')
+          {
+            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+            '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+          ).setMaxWidth("500px");
+            // create the marker
+            new mapboxgl.Marker({ color: 'black', rotation: 45 })
+            .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+            .setPopup(popup) // sets a popup on this marker
+            .addTo(map);
+            
+          }
             
         }
         j = Math.round(i/2)
@@ -410,6 +423,7 @@ background: #ee8a65;
   document.getElementById('map2').addEventListener('click', () => {
     var mile = $("#mile").val()
     var valu_type = $("#valuation_type option:selected").text()
+    var budget_type = $("#budget_label span b").text()
     var postcode = 'AB10+6RN'
     if(valu_type== 'Rent'){
       var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=high-rental-demand&postcode='+postcode+'&radius='+mile+'&results=60'
@@ -424,12 +438,13 @@ background: #ee8a65;
     // Fly to AB10 6RN.
       map.flyTo({
         center: [-2.121487, 57.137871], 
-        zoom:8,
+        zoom:12,
         pitch: 60, // pitch in degrees
         bearing: -60, // bearing in degrees
         essential: true 
       });
 
+      console.log(url)
       fetch(url)
       .then(data => {
         return data.json();
@@ -439,89 +454,372 @@ background: #ee8a65;
             alert('No available property')
           }
           else{
-            console.log('<p></p>'+house.properties[i]['address']+'</p><p>'+house.properties[i]['bedrooms']+'</p><p>'+house.properties[i]['type']+'</p><p>'+house.properties[i]['postcode']+'</p><p><strong>'+house.properties[i]['price']+'</strong></p><p> Check out the house <a href="'+house.properties[i]['url']+'"></a></p>');
-  
-            // create the popup
-            const popup = new mapboxgl.Popup({ offset: 25 }).setText(
-              'Construction on the Washington Monument began in 1848.'
-              );
-  
+            var j=0;
+            for(i=0; i<house.properties.length; i++){
+              if(house.properties[i]['price'] <= budget_type)
+              {
+                continue;
+              }
+
+              if(valu_type== 'Sale')
+              {
+                const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+              ).setMaxWidth("500px");
+    
               // create DOM element for the marker
               const el = document.createElement('div');
               el.id = 'marker';
-            
+    
               // create the marker
               new mapboxgl.Marker(el)
-              .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
-              .setPopup(popup) // sets a popup on this marker
-              .addTo(map);
+                .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                .setPopup(popup) // sets a popup on this marker
+                .addTo(map);
+              }
+    
+              if(valu_type== 'Rent')
+              {
+                const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+              ).setMaxWidth("500px");
+                // create the marker
+                new mapboxgl.Marker()
+                .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                .setPopup(popup) // sets a popup on this marker
+                .addTo(map);
+                
+              }
+              if(valu_type== 'Shortlet')
+              {
+                const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+              ).setMaxWidth("500px");
+                // create the marker
+                new mapboxgl.Marker({ color: 'black', rotation: 45 })
+                .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                .setPopup(popup) // sets a popup on this marker
+                .addTo(map);
+                
+              }
+              
+          }
+          j = Math.round(i/2)
   
             map.flyTo({
-              center: [house.properties[i]['lng'], house.properties[i]['lat']], 
-              zoom:8,
+              center: [house.properties[j]['lng'], house.properties[j]['lat']], 
+              zoom:12,
               pitch: 60, // pitch in degrees
               bearing: -60, // bearing in degrees
               essential: true 
             });
+  
             
-            
-          }
+          
+        }
           
         });
     });
     document.getElementById('map3').addEventListener('click', () => {
-      // Fly to Glasgow.
+      var mile = $("#mile").val()
+      var valu_type = $("#valuation_type option:selected").text()
+      var budget_type = $("#budget_label span b").text()
+      var postcode = 'AB10+7JB'
+      if(valu_type== 'Rent'){
+        var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=high-rental-demand&postcode='+postcode+'&radius='+mile+'&results=60'
+      }
+      if(valu_type== 'Sale')
+      {
+        var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=quick-sale-properties&postcode='+postcode+'&radius='+mile+'&results=60'
+      }
+      if(valu_type== 'Shortlet'){
+        var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=short-lease-properties&postcode='+postcode+'&radius='+mile+'&results=60'
+      }
+      // Fly to AB10 6RN.
         map.flyTo({
-        center: [-2.127206, 57.124274], 
-        zoom:15,
-        pitch: 60, // pitch in degrees
-        bearing: -60, // bearing in degrees
-        essential: true 
-        });
-      });
-      document.getElementById('map4').addEventListener('click', () => {
-        // Fly to Edinburgh.
-          map.flyTo({
-          center: [-2.093295, 57.142701], 
-          zoom:13,
+          center: [-2.121487, 57.137871], 
+          zoom:12,
           pitch: 60, // pitch in degrees
           bearing: -60, // bearing in degrees
           essential: true 
-          });
-          
         });
-        document.getElementById('map5').addEventListener('click', () => {
-          // Fly to Falkland.
-            map.flyTo({
-            center: [-2.112455, 57.137468],
-            zoom:13,
+  
+        console.log(url)
+        fetch(url)
+        .then(data => {
+          return data.json();
+          }).then( house => {
+            if(house.properties.length===0)
+            {
+              alert('No available property')
+            }
+            else{
+              var j=0;
+              for(i=0; i<house.properties.length; i++){
+              if(house.properties[i]['price'] <= budget_type)
+              {
+                continue;
+              }
+              
+              if(valu_type== 'Sale')
+              {
+                const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+              ).setMaxWidth("500px");
+    
+              // create DOM element for the marker
+              const el = document.createElement('div');
+              el.id = 'marker';
+    
+              // create the marker
+              new mapboxgl.Marker(el)
+                .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                .setPopup(popup) // sets a popup on this marker
+                .addTo(map);
+              }
+    
+              if(valu_type== 'Rent')
+              {
+                const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+              ).setMaxWidth("500px");
+                // create the marker
+                new mapboxgl.Marker()
+                .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                .setPopup(popup) // sets a popup on this marker
+                .addTo(map);
+                
+              }
+              if(valu_type== 'Shortlet')
+              {
+                const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+              ).setMaxWidth("500px");
+                // create the marker
+                new mapboxgl.Marker({ color: 'black', rotation: 45 })
+                .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                .setPopup(popup) // sets a popup on this marker
+                .addTo(map);
+                
+              }
+              
+          }
+            j = Math.round(i/2)
+    
+              map.flyTo({
+                center: [house.properties[j]['lng'], house.properties[j]['lat']], 
+                zoom:12,
+                pitch: 60, // pitch in degrees
+                bearing: -60, // bearing in degrees
+                essential: true 
+              });
+    
+              
+            
+          }
+            
+          });
+      });
+      document.getElementById('map4').addEventListener('click', () => {
+        var mile = $("#mile").val()
+        var valu_type = $("#valuation_type option:selected").text()
+        var budget_type = $("#budget_label span b").text()
+        var postcode = 'AB11+5QN'
+        if(valu_type== 'Rent'){
+          var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=high-rental-demand&postcode='+postcode+'&radius='+mile+'&results=60'
+        }
+        if(valu_type== 'Sale')
+        {
+          var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=quick-sale-properties&postcode='+postcode+'&radius='+mile+'&results=60'
+        }
+        if(valu_type== 'Shortlet'){
+          var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=short-lease-properties&postcode='+postcode+'&radius='+mile+'&results=60'
+        }
+        // Fly to AB10 6RN.
+          map.flyTo({
+            center: [-2.121487, 57.137871], 
+            zoom:12,
             pitch: 60, // pitch in degrees
             bearing: -60, // bearing in degrees
             essential: true 
-            });
-            
           });
-          document.getElementById('map6').addEventListener('click', () => {
-            // Fly to North Lanarkshire.
-              map.flyTo({
-              center: [-2.072115, 57.135968], 
-              zoom:13,
+    
+          console.log(url)
+          fetch(url)
+          .then(data => {
+            return data.json();
+            }).then( house => {
+              if(house.properties.length===0)
+              {
+                alert('No available property')
+              }
+              else{
+                var j=0;
+                for(i=0; i<house.properties.length; i++){
+                  if(house.properties[i]['price'] <= budget_type)
+                  {
+                    continue;
+                  }
+                  
+                  if(valu_type== 'Sale')
+                  {
+                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                    '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+                  ).setMaxWidth("500px");
+        
+                  // create DOM element for the marker
+                  const el = document.createElement('div');
+                  el.id = 'marker';
+        
+                  // create the marker
+                  new mapboxgl.Marker(el)
+                    .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                    .setPopup(popup) // sets a popup on this marker
+                    .addTo(map);
+                  }
+        
+                  if(valu_type== 'Rent')
+                  {
+                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                    '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+                  ).setMaxWidth("500px");
+                    // create the marker
+                    new mapboxgl.Marker()
+                    .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                    .setPopup(popup) // sets a popup on this marker
+                    .addTo(map);
+                    
+                  }
+                  if(valu_type== 'Shortlet')
+                  {
+                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                    '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+                  ).setMaxWidth("500px");
+                    // create the marker
+                    new mapboxgl.Marker({ color: 'black', rotation: 45 })
+                    .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                    .setPopup(popup) // sets a popup on this marker
+                    .addTo(map);
+                    
+                  }
+                  
+              }
+              j = Math.round(i/2)
+      
+                map.flyTo({
+                  center: [house.properties[j]['lng'], house.properties[j]['lat']], 
+                  zoom:12,
+                  pitch: 60, // pitch in degrees
+                  bearing: -60, // bearing in degrees
+                  essential: true 
+                });
+      
+                
+              
+            }
+              
+            });
+        });
+        document.getElementById('map5').addEventListener('click', () => {
+          var mile = $("#mile").val()
+          var valu_type = $("#valuation_type option:selected").text()
+          var budget_type = $("#budget_label span b").text()
+          var postcode = 'AB11+6UL'
+          if(valu_type== 'Rent'){
+            var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=high-rental-demand&postcode='+postcode+'&radius='+mile+'&results=60'
+          }
+          if(valu_type== 'Sale')
+          {
+            var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=quick-sale-properties&postcode='+postcode+'&radius='+mile+'&results=60'
+          }
+          if(valu_type== 'Shortlet'){
+            var url = 'https://api.propertydata.co.uk/sourced-properties?key=AVMTVRNTJ2&list=short-lease-properties&postcode='+postcode+'&radius='+mile+'&results=60'
+          }
+          // Fly to AB10 6RN.
+            map.flyTo({
+              center: [-2.121487, 57.137871], 
+              zoom:12,
               pitch: 60, // pitch in degrees
               bearing: -60, // bearing in degrees
               essential: true 
-              });
-
-              // Create a default Marker and add it to the map.
-              const marker1 = new mapboxgl.Marker()
-              .setLngLat([-2.072115, 57.135968])
-              .addTo(map);
-              
-              // Create a default Marker, colored black, rotated 45 degrees.
-              const marker2 = new mapboxgl.Marker({ color: 'black', rotation: 45 })
-              .setLngLat([-3.9461558, 55.8830507])
-              .addTo(map);
-              
             });
+      
+            console.log(url)
+            fetch(url)
+            .then(data => {
+              return data.json();
+              }).then( house => {
+                if(house.properties.length===0)
+                {
+                  alert('No available property')
+                }
+                else{
+                  var j=0;
+                  for(i=0; i<house.properties.length; i++){
+                    if(house.properties[i]['price'] <= budget_type)
+                    {
+                      continue;
+                    }
+                    
+                    if(valu_type== 'Sale')
+                    {
+                      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                      '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+                    ).setMaxWidth("500px");
+          
+                    // create DOM element for the marker
+                    const el = document.createElement('div');
+                    el.id = 'marker';
+          
+                    // create the marker
+                    new mapboxgl.Marker(el)
+                      .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                      .setPopup(popup) // sets a popup on this marker
+                      .addTo(map);
+                    }
+          
+                    if(valu_type== 'Rent')
+                    {
+                      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                      '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+                    ).setMaxWidth("500px");
+                      // create the marker
+                      new mapboxgl.Marker()
+                      .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                      .setPopup(popup) // sets a popup on this marker
+                      .addTo(map);
+                      
+                    }
+                    if(valu_type== 'Shortlet')
+                    {
+                      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                      '<h5>Price: &#163; '+house.properties[i]['price']+'</h5><p><b>Address: '+house.properties[i]['address']+'</p><p>Number of Bedrooms: '+house.properties[i]['bedrooms']+'</p><p>Type of house: '+house.properties[i]['type']+'</p><p>Postcode: '+house.properties[i]['postcode']+'</p><p> Copy and paste this link in your browser to view the pictures of this house: '+house.properties[i]['url']+'"</p>'
+                    ).setMaxWidth("500px");
+                      // create the marker
+                      new mapboxgl.Marker({ color: 'black', rotation: 45 })
+                      .setLngLat([house.properties[i]['lng'], house.properties[i]['lat']])
+                      .setPopup(popup) // sets a popup on this marker
+                      .addTo(map);
+                      
+                    }
+                    
+                }
+                j = Math.round(i/2)
+        
+                  map.flyTo({
+                    center: [house.properties[j]['lng'], house.properties[j]['lat']], 
+                    zoom:12,
+                    pitch: 60, // pitch in degrees
+                    bearing: -60, // bearing in degrees
+                    essential: true 
+                  });
+        
+                  
+                
+              }
+                
+              });
+          });
           });
            
 </script>
